@@ -1,9 +1,11 @@
 package com.wix.reactnativenotifications;
 
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -126,6 +128,11 @@ public class RNNotificationsModule extends ReactContextBaseJavaModule implements
         final Context appContext = getReactApplicationContext().getApplicationContext();
         final Intent tokenFetchIntent = new Intent(appContext, FcmInstanceIdRefreshHandlerService.class);
         tokenFetchIntent.putExtra(extraFlag, true);
-        appContext.startService(tokenFetchIntent);
+        
+        ActivityManager.RunningAppProcessInfo appProcessInfo = new ActivityManager.RunningAppProcessInfo();
+        ActivityManager.getMyMemoryState(appProcessInfo);
+        if(appProcessInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND || appProcessInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_VISIBLE ) {
+            appContext.startService(tokenFetchIntent);
+        }
     }
 }
